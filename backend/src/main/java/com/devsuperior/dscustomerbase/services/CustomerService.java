@@ -15,21 +15,35 @@ import com.devsuperior.dscustomerbase.repositories.CustomerRepository;
 
 @Service
 public class CustomerService {
-	
+
 	@Autowired
 	private CustomerRepository repository;
-	
+
 	@Transactional(readOnly = true)
-	public List<CustomerDTO> findAll(){
+	public List<CustomerDTO> findAll() {
 		List<Customer> list = repository.findAll();
 		return list.stream().map(x -> new CustomerDTO(x)).collect(Collectors.toList());
 	}
-	
+
 	@Transactional(readOnly = true)
 	public CustomerDTO findById(Long id) {
 		Optional<Customer> obj = repository.findById(id);
-		Customer entity = obj.orElseThrow(()-> new CustomerNotFoundException("Customer Not Found"));
+		Customer entity = obj.orElseThrow(() -> new CustomerNotFoundException("Customer Not Found"));
 		return new CustomerDTO(entity);
+	}
+
+	@Transactional(readOnly = true)
+	public CustomerDTO insert(CustomerDTO dto) {
+		Customer entity = new Customer();
+		entity.setName(dto.getName());
+		entity.setBirthDate(dto.getBirthDate());
+		entity.setChildren(dto.getChildren());
+		entity.setCpf(dto.getCpf());
+		entity.setIncome(dto.getIncome());
+		entity = repository.save(entity);
+
+		return new CustomerDTO(entity);
+
 	}
 
 }
