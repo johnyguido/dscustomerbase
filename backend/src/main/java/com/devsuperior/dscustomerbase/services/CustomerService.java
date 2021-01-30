@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,22 +53,32 @@ public class CustomerService {
 	public CustomerDTO update(Long id, CustomerDTO dto) {
 
 		try {
-		Customer entity = repository.getOne(id);
+			Customer entity = repository.getOne(id);
 
-		entity.setName(dto.getName());
-		entity.setBirthDate(dto.getBirthDate());
-		entity.setChildren(dto.getChildren());
-		entity.setCpf(dto.getCpf());
-		entity.setIncome(dto.getIncome());
-		entity = repository.save(entity);
+			entity.setName(dto.getName());
+			entity.setBirthDate(dto.getBirthDate());
+			entity.setChildren(dto.getChildren());
+			entity.setCpf(dto.getCpf());
+			entity.setIncome(dto.getIncome());
+			entity = repository.save(entity);
 
-		return new CustomerDTO(entity);
-		} 
-		
+			return new CustomerDTO(entity);
+		}
+
 		catch (EntityNotFoundException e) {
 			throw new CustomerNotFoundException("Id not found " + id);
 		}
-		
+
+	}
+
+	public void delete(Long id) {
+		try {
+			repository.deleteById(id);
+		} catch (EmptyResultDataAccessException e) {
+			throw new CustomerNotFoundException("Id not found " + id);
+
+		}
+
 	}
 
 }
